@@ -207,6 +207,8 @@ class MoonExactAspectEvent(BaseModel):
 
 
 class DailyWindowsResponse(BaseModel):
+    date: str
+    timezone: str
     dt_start_utc: str
     dt_end_utc: str
     moon_sign_ingresses: list[MoonSignIngressEvent]

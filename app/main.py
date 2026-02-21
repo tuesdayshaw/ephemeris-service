@@ -418,6 +418,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         log_event(LOGGER, "Daily windows computed", endpoint="/v1/daily/windows", duration_ms=elapsed_ms)
 
         return DailyWindowsResponse(
+            date=local_date.isoformat(),
+            timezone=tz_name,
             dt_start_utc=format_utc(dt_start_utc),
             dt_end_utc=format_utc(dt_end_utc),
             moon_sign_ingresses=[payload for _, payload in ingress_events],

@@ -193,6 +193,8 @@ def test_daily_windows_structure(client: TestClient) -> None:
     assert response.status_code == 200
     payload = response.json()
 
+    assert payload["date"] == "2025-06-15"
+    assert payload["timezone"] == "America/Chicago"
     assert "dt_start_utc" in payload
     assert "dt_end_utc" in payload
     assert "moon_sign_ingresses" in payload
