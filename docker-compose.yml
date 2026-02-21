@@ -1,0 +1,13 @@
+services:
+  ephemeris-service:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./ephe:/ephe:ro
+      - ./cache:/cache
+    environment:
+      EPHE_PATH: /ephe
+      CACHE_DIR: /cache

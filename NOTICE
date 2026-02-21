@@ -1,0 +1,11 @@
+Ephemeris Service Notice / Attribution
+
+This project uses Swiss Ephemeris through the Python package `pyswisseph`.
+
+- Swiss Ephemeris: https://www.astro.com/swisseph/
+- pyswisseph: https://github.com/astrorigin/pyswisseph
+
+Practical compliance notes:
+- Ensure Swiss Ephemeris data files are obtained from official sources and mounted at runtime.
+- This repository is distributed under AGPL-3.0-or-later.
+- This file is informational only and is not legal advice.
