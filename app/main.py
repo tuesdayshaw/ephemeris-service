@@ -9,6 +9,8 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import Depends, FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from app.auth import ApiKeyAuth
 from app.cache import SnapshotCache
@@ -203,7 +205,26 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     cache = SnapshotCache(cache_dir=active_settings.cache_dir)
     auth = ApiKeyAuth(active_settings.api_key)
 
-    app = FastAPI(title="ephemeris-service", version="1.0.0")
+    app_kwargs: dict[str, Any] = {"title": "ephemeris-service", "version": "1.0.0"}
+    if active_settings.disable_docs:
+        app_kwargs.update({"docs_url": None, "redoc_url": None, "openapi_url": None})
+    app = FastAPI(**app_kwargs)
+
+    if active_settings.allowed_origins_list:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=active_settings.allowed_origins_list,
+            allow_credentials=False,
+            allow_methods=["GET"],
+            allow_headers=["*"],
+        )
+
+    if active_settings.allowed_hosts_list:
+        app.add_middleware(
+            TrustedHostMiddleware,
+            allowed_hosts=active_settings.allowed_hosts_list,
+        )
+
     register_exception_handlers(app)
 
     @app.get("/health")

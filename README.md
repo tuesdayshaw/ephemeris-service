@@ -50,6 +50,9 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 - `CACHE_DIR`: directory for snapshot SQLite cache
 - `API_KEY`: API key for `/v1/*` routes; empty disables auth (dev only)
 - `TZ`: default timezone for endpoints that accept `tz` (default `America/Chicago`)
+- `ALLOWED_ORIGINS`: comma-separated CORS allowlist; empty disables CORS middleware
+- `ALLOWED_HOSTS`: comma-separated trusted host allowlist; empty disables trusted host checks
+- `DISABLE_DOCS`: `true` to disable `/docs`, `/redoc`, and `/openapi.json`
 
 Example:
 
@@ -58,6 +61,30 @@ EPHE_PATH=/var/ephe
 CACHE_DIR=/var/cache
 API_KEY=devkey
 TZ=America/Chicago
+ALLOWED_ORIGINS=http://localhost:3000
+ALLOWED_HOSTS=localhost,127.0.0.1
+DISABLE_DOCS=false
+```
+
+## Production settings (Render)
+
+- CORS allowlist format:
+  - `ALLOWED_ORIGINS` is a comma-separated list of exact origins, for example:
+    - `https://app.example.com,http://localhost:3000`
+  - Leave empty to disable CORS middleware.
+- Trusted hosts allowlist format:
+  - `ALLOWED_HOSTS` is a comma-separated list of allowed hostnames, for example:
+    - `ephemeris-service.onrender.com`
+  - Leave empty to disable TrustedHost middleware.
+- Docs disabling:
+  - Set `DISABLE_DOCS=true` to disable `/docs`, `/redoc`, and `/openapi.json` in production.
+
+Render example values:
+
+```bash
+ALLOWED_ORIGINS=https://<your-moon-minutes-domain>,http://localhost:3000
+ALLOWED_HOSTS=ephemeris-service.onrender.com
+DISABLE_DOCS=true
 ```
 
 ## Ephemeris Data Files
