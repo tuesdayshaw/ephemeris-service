@@ -209,6 +209,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/health")
     async def health() -> dict[str, str]:
         return {"status": "ok"}
+    
+    @app.get("/")
+    async def root() -> dict[str, str]:
+        return {"service": "ephemeris-service", "status": "ok"}
 
     @app.get("/v1/positions", response_model=PositionsResponse, dependencies=[Depends(auth)])
     async def positions(
