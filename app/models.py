@@ -19,6 +19,21 @@ BodyName = Literal[
     "pluto",
 ]
 
+SignName = Literal[
+    "aries",
+    "taurus",
+    "gemini",
+    "cancer",
+    "leo",
+    "virgo",
+    "libra",
+    "scorpio",
+    "sagittarius",
+    "capricorn",
+    "aquarius",
+    "pisces",
+]
+
 
 class ErrorResponse(BaseModel):
     detail: str
@@ -48,6 +63,9 @@ class BodyPosition(BaseModel):
     distance_au: float
     speed_deg_per_day: float
     is_retrograde: bool
+    sign_index: int = Field(ge=0, le=11)
+    sign: SignName
+    degree_in_sign: float = Field(ge=0.0, lt=30.0)
 
 
 class PositionsResponse(BaseModel):
@@ -67,6 +85,14 @@ class AspectResult(BaseModel):
     exact_angle: float
     actual_angle: float
     orb_used: float
+    moon_longitude: float = Field(ge=0.0, lt=360.0)
+    body_longitude: float = Field(ge=0.0, lt=360.0)
+    moon_sign_index: int = Field(ge=0, le=11)
+    moon_sign: SignName
+    moon_degree_in_sign: float = Field(ge=0.0, lt=30.0)
+    body_sign_index: int = Field(ge=0, le=11)
+    body_sign: SignName
+    body_degree_in_sign: float = Field(ge=0.0, lt=30.0)
 
 
 class MoonAspectsResponse(BaseModel):

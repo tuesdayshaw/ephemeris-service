@@ -50,6 +50,9 @@ def test_positions_known_date_ranges(client: TestClient) -> None:
     assert len(payload["bodies"]) == 10
     for body in payload["bodies"]:
         assert 0.0 <= body["longitude"] < 360.0
+        assert 0 <= body["sign_index"] <= 11
+        assert isinstance(body["sign"], str)
+        assert 0.0 <= body["degree_in_sign"] < 30.0
 
 
 def test_snapshot_daily_cache_hit(client: TestClient) -> None:
@@ -65,4 +68,28 @@ def test_snapshot_daily_cache_hit(client: TestClient) -> None:
     assert second.status_code == 200
     second_payload = second.json()
     assert second_payload["cached"] is True
+    for body in second_payload["bodies"]:
+        assert "sign_index" in body
+        assert "sign" in body
+        assert "degree_in_sign" in body
     assert second_payload["bodies"] == first_payload["bodies"]
+
+
+def test_moon_aspects_include_sign_fields(client: TestClient) -> None:
+    response = client.get(
+        "/v1/moon/aspects",
+        params={"date": "2025-06-15", "tz": "America/Chicago", "orb": "180"},
+        headers={"X-API-Key": "test-key"},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["aspects"]
+    item = payload["aspects"][0]
+    assert "moon_longitude" in item
+    assert "body_longitude" in item
+    assert "moon_sign_index" in item
+    assert "moon_sign" in item
+    assert "moon_degree_in_sign" in item
+    assert "body_sign_index" in item
+    assert "body_sign" in item
+    assert "body_degree_in_sign" in item

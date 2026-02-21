@@ -23,6 +23,7 @@ from app.models import (
     SnapshotQuery,
     SnapshotResponse,
 )
+from app.zodiac import derive_sign_fields
 
 LOGGER = logging.getLogger("ephemeris_service")
 
@@ -222,10 +223,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         for body_name in DEFAULT_BODIES:
             if body_name == "moon":
                 continue
-            actual = shortest_angle_diff(moon.longitude, by_name[body_name].longitude)
+            body_position = by_name[body_name]
+            actual = shortest_angle_diff(moon.longitude, body_position.longitude)
             for aspect_name, exact in ASPECT_ANGLES.items():
                 orb_used = abs(actual - exact)
                 if orb_used <= orb_value:
+                    moon_sign_index, moon_sign, moon_degree_in_sign = derive_sign_fields(moon.longitude)
+                    body_sign_index, body_sign, body_degree_in_sign = derive_sign_fields(body_position.longitude)
                     aspects.append(
                         {
                             "body": body_name,
@@ -233,6 +237,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                             "exact_angle": exact,
                             "actual_angle": round(actual, 4),
                             "orb_used": round(orb_used, 4),
+                            "moon_longitude": round(moon.longitude, 4),
+                            "body_longitude": round(body_position.longitude, 4),
+                            "moon_sign_index": moon_sign_index,
+                            "moon_sign": moon_sign,
+                            "moon_degree_in_sign": round(float(moon_degree_in_sign), 4),
+                            "body_sign_index": body_sign_index,
+                            "body_sign": body_sign,
+                            "body_degree_in_sign": round(float(body_degree_in_sign), 4),
                         }
                     )
                     break

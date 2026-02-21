@@ -9,6 +9,7 @@ import swisseph as swe
 
 from app.errors import ApiError
 from app.models import BodyPosition
+from app.zodiac import derive_sign_fields
 
 BODY_TO_SWISS: dict[str, int] = {
     "sun": swe.SUN,
@@ -46,14 +47,19 @@ class EphemerisEngine:
                 self._raise_calc_error(str(exc))
 
             lon, lat, distance, speed_lon = values[0], values[1], values[2], values[3]
+            norm_lon = float(lon) % 360.0
+            sign_index, sign, degree_in_sign = derive_sign_fields(norm_lon)
             result.append(
                 BodyPosition(
                     name=body_name,
-                    longitude=float(lon) % 360.0,
+                    longitude=norm_lon,
                     latitude=float(lat),
                     distance_au=float(distance),
                     speed_deg_per_day=float(speed_lon),
                     is_retrograde=bool(speed_lon < 0),
+                    sign_index=sign_index,
+                    sign=sign,
+                    degree_in_sign=float(degree_in_sign),
                 )
             )
         return result
